@@ -1,0 +1,1469 @@
+/*MOOD GAMING*/
+
+#include <stdio.h>
+#include <conio.h>
+#include <stdlib.h>
+#include <windows.h>
+#include <time.h>
+#include <ctype.h>
+#include <process.h>
+#include <math.h>
+#include <string.h>
+#include <unistd.h>
+
+#define PR 2
+#define UP 72
+#define DOWN 80
+#define LEFT 75
+#define RIGHT 77
+#define SIZE 4
+#define BORDER 219
+#define ESC 57
+#define N 20
+#define M 40
+#define _XOPEN_SOURCE 500
+#define MAXWORDLENGTH 12
+#define MINWORDLENGTH 3
+#define MAXARRAYLENGTH 12
+#define MINTRIES 5
+
+//TIC-TAC-TOE GAME
+int tic_tac_toe()
+{
+        int winner = 0, count = 0;
+        int data[9], index, sign, player, flag, i, k, j;
+
+        for (i = 0; i < 9; i++)
+                data[i] = ' ';
+
+
+        while (count < 9) {
+                flag = 0;
+                system("cls");
+                printf("\n\n");
+                printf("\t\t\t  %c | %c  | %c  \n", data[0], data[1], data[2]);
+                printf("\t\t\t----+----+----\n");
+                printf("\t\t\t  %c | %c  | %c  \n", data[3], data[4], data[5]);
+                printf("\t\t\t----+----+---\n");
+                printf("\t\t\t  %c | %c  | %c  \n", data[6], data[7], data[8]);
+                if (count % 2 == 0) {
+                        sign = 'X';
+                        player = 1;
+                } else {
+                        sign = 'O';
+                        player = 2;
+                }
+                printf("Move for player%d(1-9):", player);
+                scanf("%d", &index);
+                if (index < 1 || index > 9) {
+                        printf("Allowed index is 1 to 9!!\n");
+                        continue;
+                }
+                if (data[index - 1] == 'X' || data[index - 1] == 'Y') {
+                        printf("Position Already occupied!!\n");
+                        continue;
+                }
+                data[index - 1] = sign;
+                count++;
+
+                for (i = 0; i < 9; i++) {
+                        if (i % 3 == 0)
+                                flag = 0;
+
+                        if (data[i] == sign)
+                                flag++;
+
+                        if (flag == 3) {
+                                winner = 1;
+                                goto win;
+                        }
+                }
+
+                flag = 0;
+                for (i = 0; i < 3; i++) {
+                        for (k = i; k <= i + 6; k = k + 3) {
+                                if (data[k] == sign)
+                                        flag++;
+                        }
+                        if (flag == 3) {
+                                winner = 1;
+                                goto win;
+                        }
+                        flag = 0;
+                }
+                if ((data[0] == sign && data[4] == sign && data[8] == sign) ||
+                        (data[2] == sign && data[4] == sign && data[6] ==  sign)) {
+                        winner = 1;
+                        goto win;
+                }
+        }
+  win:
+        system("cls");
+        printf("\n\n");
+        printf("\t\t\t  %c | %c  | %c  \n", data[0], data[1], data[2]);
+        printf("\t\t\t----+----+----\n");
+        printf("\t\t\t  %c | %c  | %c  \n", data[3], data[4], data[5]);
+        printf("\t\t\t----+----+---\n");
+        printf("\t\t\t  %c | %c  | %c  \n\n", data[6], data[7], data[8]);
+        if (winner)
+            {
+                printf("\t\t\xdb\xdb Player %d is the winner. Congrats!! \xdb\xdb\n", player);
+            }
+        else
+            {
+                printf("\t\t\xdb Match draw.. Best of luck for both \xdb\n");
+
+            }
+            printf("\t\t\n\xdb\xdb Has you mood improved or do you want to continue playing? \xdb\xdb\n");
+            getch();
+            intro_2();
+            getch();
+            wait();
+}
+
+//SNAKE GAME
+int i,j,Field[N][M],x,y,Gy,Head,Tail,Game,Frogs,a,b,var,dir,score,HighScore,Speed;
+FILE *f;
+
+void snakeInitialization()
+{
+    f=fopen("highscore.txt","r");
+    fscanf(f,"%d",&HighScore);
+    fclose(f);
+
+    for(i=0;i<N;i++)
+    {
+        for(j=0;j<M;j++)
+        {
+            Field[i][j]=0;
+        }
+    }
+    x=N/2;y=M/2; Gy = y; Head = 5; Tail =1; Game = 0,Frogs = 0,dir='d',score=0,Speed = 99;
+
+    for(i=0;i<Head;i++)
+    {
+    Gy++;
+    Field[x][Gy-Head] = i+1;
+    }
+}
+
+void print()
+{
+    for(i=0;i<=M+1;i++)
+    {
+        if(i==0)
+        {
+            printf("%c",201);
+        }
+        else if(i==M+1)
+        {
+            printf("%c",187);
+        }
+        else
+        {
+            printf("%c",205);
+        }
+    }
+    printf("   Current Score: %d  HighScore: %d",score,HighScore);
+    printf("\n");
+
+    for(i=0;i<N;i++)
+    {
+        printf("%c",186);
+
+        for(j=0;j<M;j++)
+            {
+            if(Field[i][j]==0) printf(" ");
+            if(Field[i][j]>0 && Field[i][j]!=Head) printf("%c",176);
+            if(Field[i][j]==Head) printf("%c",178);
+            if(Field[i][j]==-1) printf("%c",15);
+            if(j==M-1) printf("%c\n",186);
+            }
+    }
+
+    for(i=0;i<=M+1;i++)
+    {
+        if(i==0)
+        {
+            printf("%c",200);
+        }
+        else if(i==M+1)
+        {
+        printf("%c",188);
+        }
+        else
+        {
+        printf("%c",205);
+        }
+    }
+}
+
+void ResetScreenPosition()
+{
+    HANDLE hOut;
+    COORD Position;
+    hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    Position.X = 0;
+    Position.Y = 0;
+    SetConsoleCursorPosition(hOut,Position);
+}
+
+void Random()
+{
+    srand(time(0));
+    a = 1+ rand() % 18;
+    b = 1 + rand() % 38;
+
+    if(Frogs == 0 && Field[a][b]==0)
+    {
+        Field[a][b]= -1;
+        Frogs = 1;
+        if(Speed>10 && score!=0) Speed = Speed - 5;
+    }
+}
+
+int getch_noblock()
+{
+    if(_kbhit())
+        return _getch();
+    else
+        return -1;
+}
+
+void movement()
+{
+    var = getch_noblock();
+    var = tolower(var);
+
+    if(((var=='d'||var=='a')||(var=='w'||var=='s'))&&(abs(dir-var)>5)) dir = var;
+    if(dir =='d')
+    {
+        y++;
+        if(y==M-1) y = 0;
+        if(Field[x][y]!=0 && Field[x][y]!=-1) GameOver();
+        if(Field[x][y]==-1)
+        {
+            Frogs = 0;
+            score+=5;
+            Tail -= 1;
+        }
+
+        Head++;
+        Field[x][y] = Head;
+    }
+
+    if(dir =='a')
+    {
+        y--;
+        if(y==0) y = M-1;
+        if(Field[x][y]!=0 && Field[x][y]!=-1) GameOver();
+        if(Field[x][y]==-1)
+        {
+            Frogs = 0;
+            score+=5;
+            Tail -= 1;
+        }
+        Head++;
+        Field[x][y] = Head;
+    }
+
+    if(dir =='w')
+    {
+        x--;
+        if(x==-1) x = N-1;
+        if(Field[x][y]!=0 && Field[x][y]!=-1) GameOver();
+        if(Field[x][y]==-1)
+        {
+            Frogs = 0;
+            score+=5;
+            Tail -= 1;
+        }
+        Head++;
+        Field[x][y] = Head;
+    }
+
+    if(dir =='s')
+    {
+        x++;
+        if(x==N-1) x = 0;
+        if(Field[x][y]!=0 && Field[x][y]!=-1) GameOver();
+        if(Field[x][y]==-1)
+        {
+            Frogs = 0;
+            score+=5;
+            Tail -= 1;
+        }
+        Head++;
+        Field[x][y] = Head;
+    }
+}
+
+void TailRemove()
+{
+    for(i=0;i<N;i++)
+    {
+        for(j=0;j<M;j++)
+        {
+            if(Field[i][j]==Tail)
+            {
+                Field[i][j] = 0;
+            }
+        }
+    }
+    Tail++;
+}
+
+void GameOver()
+{
+    printf("\a");
+    Sleep(1500);
+    system("Cls");
+
+    if(score>HighScore)
+    {
+        printf("  New HighScore %d!!!!!!\n\n",score);
+        system("pause");
+        f=fopen("highscore.txt","w");
+        fprintf(f,"%d",score);
+        fclose(f);
+    }
+        printf("\n\n\xdb  GAME OVER !!!!!!  \xdb\n");
+        printf("\xdb Score : %d \xdb \n\n",score);
+        printf("\t\t\n\xdb\xdb Has you mood improved or do you want to continue playing? \xdb\xdb\n");
+        getch();
+
+    while(1)
+    {
+        var = getch_noblock();
+        if(var == 27)
+        {
+            Game = 1;
+            break;
+        }
+
+    }
+    intro_2();
+
+}
+
+
+int snake()
+{
+    printf("\n\n\t\t\t\t\t\xdb INSTRUCTIONS \xdb\n");
+    printf("\n\t\t\t\t\t\xdb To move use the keys \xdb\n\t\t\t\t\t\t w = up \n\t\t\t\t\t\t s = down \n\t\t\t\t\t\t a = left \n\t\t\t\t\t\t d = right ");
+    getch();
+    system("cls");
+    snakeInitialization();
+
+    while(Game == 0)
+    {
+        print();
+        ResetScreenPosition();
+        Random();
+        movement();
+        TailRemove();
+        Sleep(Speed);
+    }
+}
+
+//2048 GAME
+int Matrix[SIZE+1][SIZE+1]={0};
+int score=2048,last=0;
+
+void starting()
+{
+    int i;
+    char s1[]="\xdb WELCOME \xdb";
+    char s2[]="\xdb PRESS ANY KEY TO CONTINUE \xdb";
+    char s3[]="\xdb Single-player sliding block puzzle game \xdb";
+
+    char s5[]="\xdb 2048 GAME \xdb";
+
+
+    waitL();
+    waitL();
+
+    printf("\n\n\n\n\n\t\t\t\t");
+    printer(s1);
+    waitL();
+    waitL();
+    printf("\n\n\n\n\n\n\n\n\t\t\t\t");
+    printer(s2);
+    while(!kbhit());
+
+    printf("\n\n\n\n\t\t\t\t");
+    printer(s5);
+    waitL();
+    printf("\n\n\n\n\t\t\t\t");
+    waitL();
+    printer(s3);
+    waitL();
+    waitL();
+    waitL();
+    waitL();
+    waitL();
+    waitL();
+    system("cls");
+
+    printf("\n\n\t\t\t\t\t");
+    for(i=0;i<10;i++)
+    {
+        waitL();
+    }
+    system("cls");
+    printf("\n\n\n\t\t\t\xdb INSTRUCTION \xdb\n\n\n");
+    printf("\xdb ->  Enter arrow key to move \xdb\n\n");
+    printf("\xdb ->  For wining this game any one box have value 2048 \xdb\n\n");
+    printf("\xdb -> You have maximum 2048 try to win the game \xdb\n\n\n\n");
+    printf("\t\t\t\t\t\t\xdb PRESS ANY KEY TO PLAY \xdb\n");
+    waitL();
+    getch();
+    while(!kbhit());
+}
+
+void wait()
+{
+    int i;
+    for(i=0;i<3500000;i++);
+}
+
+void waitL()
+{
+    int i;
+    for(i=0;i<20;i++)
+    {
+        wait();
+    }
+}
+
+void printer(char s[])
+{
+    int i=0;
+    while(s[i]!='\0')
+    {
+        printf("%c",s[i]);
+        wait();
+        wait();
+        i++;
+    }
+}
+
+void Action(int Arrow)
+{
+
+    switch(Arrow)
+    {
+        case UP:
+            {
+                Up();
+                break;
+            }
+        case DOWN:
+            {
+                Down();
+                break;
+            }
+        case LEFT:
+            {
+                Left();
+                break;
+            }
+        case RIGHT:
+            {
+                Right();
+                break;
+            }
+        default:
+            {
+                return;
+            }
+    }
+    score--;
+    Random_creater();
+    Display();
+}
+
+void Random_creater()
+{
+    int temp1,temp2,add,i,j;
+    srand(time(NULL));
+    temp1=rand()%SIZE;  // i
+
+    srand(time(NULL));
+    temp2=rand()%SIZE;  // j
+
+    if((temp1+temp2)%2==0)
+        add=2;
+    else
+        add=4;
+
+    for(i=0;i<temp1;i++)
+    {
+        for(j=temp2;j<SIZE;j++)
+        {
+            if(Matrix[i][j]==0)
+            {
+                Matrix[i][j]=add;
+                return;
+            }
+        }
+    }
+}
+
+void Display()
+{
+    int i,j;
+    system("cls");
+    print_ever();
+    for(i=0;i<SIZE;i++)
+    {
+        printf("\t\t\t %c",BORDER);
+        for(j=0;j<SIZE;j++)
+        {
+            if(Matrix[i][j]==0)
+            {
+                printf("      ");
+            }
+            else
+                printf(" %4d ",Matrix[i][j]);
+        }
+        printf("%c\n\t\t\t %c                        %c\n",BORDER,BORDER,BORDER);
+    }
+    printf("\t\t\t %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n\n",BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER);
+}
+
+void print_ever()
+{
+    printf("\n\n\n\t\t\tTWO-ZERO-FOUR-EIGHT\n");
+    printf("\t\t\t\t\t\t\t\t SCORE  : %d\n\n\n\n",score);
+    printf("\t\t\t %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER,BORDER);
+
+}
+
+void ending()
+{
+
+    printf("\n\n\t\t\t\t\xdb\xdb YOUR SCORE is  : %d  \xdb\xdb",score);
+    record();
+}
+
+void record()
+{
+   char plname[20],nplname[20],cha,c;
+   int i,j;
+   FILE *info;
+   info=fopen("record.txt","a+");
+   getch();
+   system("cls");
+   printf("Enter your name\n");
+   scanf("%[^\n]",plname);
+   //********
+   for(j=0;plname[j]!='\0';j++){ //to convert the first letter after space to capital
+   nplname[0]=toupper(plname[0]);
+   if(plname[j-1]==' '){
+   nplname[j]=toupper(plname[j]);
+   nplname[j-1]=plname[j-1];}
+   else nplname[j]=plname[j];
+   }
+   nplname[j]='\0';
+   //***********
+   //sdfprintf(info,"\t\t\tPlayers List\n");
+   fprintf(info,"Player Name :%s\n",nplname);
+    //for date and time
+
+   time_t mytime;
+  mytime = time(NULL);
+  fprintf(info,"Played Date:%s",ctime(&mytime));
+     //**********
+     fprintf(info,"Score:%d\n",score);//call score to display score
+     //fprintf(info,"\nLevel:%d\n",10);//call level to display level
+   for(i=0;i<=50;i++)
+   fprintf(info,"%c",'_');
+   fprintf(info,"\n");
+   fclose(info);
+   printf("wanna see past records press 'y'\n");
+   cha=getch();
+   system("cls");
+   if(cha=='y'){
+   info=fopen("record.txt","r");
+   do{
+       putchar(c=getc(info));
+       }while(c!=EOF);}
+     fclose(info);
+     printf("\n\n\n\t\t\t\tPRESS ANY KEY TO EXIT\n");
+     while(!kbhit());
+    system("attrib +h +s record.txt");
+}
+
+void Starting_Random()
+{
+    Matrix[3][1]=8;
+    Matrix[3][2]=32;
+    Matrix[3][3]=16;
+    Matrix[2][2]=8;
+    Matrix[2][3]=8;
+    Matrix[1][2]=8;
+
+    Display();
+}
+
+int Temp_counter()
+{
+
+    int temp=0,i,j;
+
+    for(i=0;i<SIZE;i++)
+    {
+        for(j=0;j<SIZE;j++)
+        {
+            if(Matrix[i][j]==2048)
+                return(1);
+            if(Matrix[i][j]==0)
+                temp=1;
+        }
+    }
+    if(temp==1)
+    {
+        last=0;
+        return(-99);
+    }
+    else
+    {
+        if(last==1)
+        {
+            return(0);
+        }
+        last=1;
+        return(-99);
+    }
+}
+
+void Down()
+{
+    int i,j;
+    for(j=0;j<SIZE;j++)
+    {
+        i=2;
+        while(1)
+        {
+            while(Matrix[i][j]==0)
+            {
+                if(i==-1)
+                    break;
+                i--;
+            }
+            if(i==-1)
+                break;
+            while(i<SIZE-1 && (Matrix[i+1][j]==0 || Matrix[i][j]==Matrix[i+1][j]))
+            {
+                Matrix[i+1][j]+=Matrix[i][j];
+                Matrix[i][j]=0;
+                i++;
+            }
+            i--;
+        }
+    }
+}
+
+void Up()
+{
+    int i,j;
+    for(j=0;j<SIZE;j++)
+    {
+        i=1;
+        while(1)
+        {
+            while(Matrix[i][j]==0)
+            {
+                if(i==SIZE)
+                    break;
+                i++;
+            }
+            if(i==SIZE)
+                break;
+            while(i>0 && (Matrix[i-1][j]==0 || Matrix[i][j]==Matrix[i-1][j]))
+            {
+                Matrix[i-1][j]+=Matrix[i][j];
+                Matrix[i][j]=0;
+                i--;
+            }
+            i++;
+        }
+    }
+}
+
+void Right()
+{
+    int i,j;
+    for(i=0;i<SIZE;i++)
+    {
+        j=2;
+        while(1)
+        {
+            while(Matrix[i][j]==0)
+            {
+                if(j==-1)
+                    break;
+                j--;
+            }
+            if(j==-1)
+                break;
+            while(j<SIZE-1 && (Matrix[i][j+1]==0 || Matrix[i][j]==Matrix[i][j+1]))
+            {
+                Matrix[i][j+1]+=Matrix[i][j];
+                Matrix[i][j]=0;
+                j++;
+            }
+            j--;
+        }
+    }
+}
+
+void Left()
+{
+    int i,j;
+    for(i=0;i<SIZE;i++)
+    {
+        j=1;
+        while(1)
+        {
+            while(Matrix[i][j]==0)
+            {
+                if(j==SIZE)
+                    break;
+                j++;
+            }
+            if(j==SIZE)
+                break;
+            while(j>0 && (Matrix[i][j-1]==0 || Matrix[i][j]==Matrix[i][j-1]))
+            {
+                Matrix[i][j-1]+=Matrix[i][j];
+                Matrix[i][j]=0;
+                j--;
+            }
+            j++;
+        }
+    }
+}
+
+int twenty_forty_eight()
+{
+    int aro;
+    char Arrow;
+    char s[]="\xdb THANKS FOR PLAYING, GOOD LUCK FOR NEXT TIME \xdb";
+    int temp;
+    starting();
+    Starting_Random();
+    Arrow=DOWN;
+    while(Arrow!=ESC)
+    {
+        Arrow=getch();
+        aro=Arrow;
+        Action(Arrow);
+        temp=Temp_counter();
+        if(temp==1)
+        {
+            printf("\n\t\t\t\xdb YOU WON \xdb");
+            ending();
+            break;
+        }
+        if(temp==0 || score<0)
+        {
+            printf("\n\t\t\t\xdb SORRY !  GAME OVER \xdb\n");
+            break;
+        }
+    }
+    system("cls");
+    printf("\n\n\n\t");
+    printer(s);
+    printf("\t\t\n\xdb\xdb Has you mood improved or do you want to continue playing? \xdb\xdb\n");
+    getch();
+    intro_2();
+    getch();
+    wait();
+    waitL();
+    waitL();
+    waitL();
+    waitL();
+}
+
+
+//HANGMAN GAME
+int hangman(void)
+{
+
+    char word[MAXARRAYLENGTH];
+    char guess[MAXARRAYLENGTH];
+    char empty[MAXARRAYLENGTH];
+    char abyss[MAXARRAYLENGTH];
+
+
+    PrintGreetMessage();
+
+    printf("\xdb Word must not contain spaces or numbers \xdb\n");
+    printf("\n\xdb Word must be lowercase\xdb\n\n");
+    printf("\n \xdb Please enter a word for player 2 to try and figure out: \xdb");
+    fgets(word, 20, stdin);
+
+    int alphacheck = 0;
+    int n = strlen(word);
+    int x = 0;
+
+    do {
+
+        if((isalpha(word[x]) && (n < MAXWORDLENGTH) && (n > MINWORDLENGTH)  && (islower(word[x]))))
+        {
+            x++;
+            if(x == (n - 1))
+            {
+                alphacheck = 1;
+            }
+        }
+
+        else
+        {
+            printf("\n\nPlayer 1, please enter a valid word: ");
+            readWord(word, MAXWORDLENGTH);
+            alphacheck = 0;
+            n = strlen(word);
+            x = 0;
+        }
+    }while(alphacheck == 0);
+
+    clear();
+
+    //initialize these 2 arrays
+    int a = 0;
+
+    while(a < n)
+    {
+        empty[a] = '_';
+        abyss[a] = '_';
+        a++;
+    }
+
+    empty[strlen(word) - 1] = '\0';
+    abyss[strlen(word) - 1] = '\0';
+    guess[strlen(word) - 1] = '\0';
+    word[strlen(word) - 1] = '\0';
+
+    play(word, guess, empty, abyss);
+
+
+printf("\n");
+
+return 0;
+}
+
+void PrintBoard(int casenum)
+{
+    switch (casenum)
+    {
+        case 1:
+        printf("|\\___\n");
+        printHangmanStand(7);
+        break;
+
+        case 2:
+        printf("|\\___\n");
+        printf("|   O\n");
+        printf("|   |\n");
+        printHangmanStand(5);
+            break;
+
+        case 3:
+        printf("|\\___\n");
+        printf("|   O\n");
+        printf("|  /|\n");
+        printHangmanStand(5);
+            break;
+
+        case 4:
+        printf("|\\___\n");
+        printf("|   O\n");
+        printf("|  /|\\\n");
+        printHangmanStand(5);
+            break;
+
+        case 5:
+        printf("|\\___\n");
+        printf("|   O\n");
+        printf("|  /|\\\n");
+        printf("|  / \n");
+        printHangmanStand(4);
+            break;
+
+        case 6:
+        printf("|\\___\n");
+        printf("|   O\n");
+        printf("|  /|\\\n");
+        printf("|  / \\\n");
+        printHangmanStand(4);
+            break;
+
+        default:
+        printf("Error: switch case not met\n\n");
+    }
+}
+
+void fillblank(char *a, char *b)
+{
+    char tmp = *a;
+    //*a = *b;
+    *b = tmp;
+}
+
+void swap(char *a, char *b)
+{
+    char tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
+
+void printHangmanStand(int numLines)
+{
+    while(numLines > 0)
+    {
+        printf("|\n");
+        numLines --;
+    }
+}
+
+void clear(void)
+{
+    printf("\033[2J");
+    printf("\033[%d;%dH", 0, 0);
+}
+
+
+void PrintGreetMessage(void)
+{
+    clear();
+    printf("\n\n\n\t\t\xdb\xdb WELCOME TO HANGMAN!!! \xdb\xdb\n");
+    printf("\n");
+    usleep(200000);
+}
+
+void play(char *player1word, char*player2guess, char*undsArray, char*chardumpArray)
+{
+
+int wordlength = strlen(player1word);
+int RemainingGuesses = 5;
+int letterfound = 0;
+int timesfound = 0;
+int casenum = 1;
+char enterpress;
+
+        PrintBoard(casenum);
+
+        for(int z = 0; z < wordlength; z++)
+        {
+            printf(" %c ", undsArray[z]);
+        }
+
+        for(int i = 0; i < (wordlength * MINTRIES); i++)
+        {
+            letterfound = 0;
+            printf("\n\n");
+            printf("\xdb  Please make a guess: ");
+            scanf("%c", &player2guess[i]);
+            enterpress = getchar();
+            printf("\n\n");
+
+
+
+            for(int b = 0; b < wordlength; b++)
+            {
+                if(player2guess[i] == player1word[b])
+                {
+                    letterfound = 1;
+                    fillblank(&player2guess[i], &undsArray[b]);
+                    swap(&player1word[b], &chardumpArray[b]);
+                    timesfound++;
+
+                }
+            }
+
+            if(letterfound == 0)
+            {
+                casenum++;
+                printf("\n\xdb You have %i tries left! \xdb\n", --RemainingGuesses);
+            }
+
+            if(timesfound == wordlength)
+            {
+                PrintBoard(casenum);
+                for(int v = 0; v < wordlength; v++)
+                {
+                    printf(" %c ", undsArray[v]);
+                }
+                printf("\n\n\t\t\xdb   WOW You figured out player 1's word!!!    \xdb\n\n\n");
+                printf("\t\t\t\t\xdb You win!!!!!!!! \xdb\n\n\n");
+                break;
+            }
+            if(RemainingGuesses == 0)
+            {
+                casenum = 6;
+                PrintBoard(casenum);
+                printf("\n\n\n\t\t\xdb  You Lose. Better Luck Next Time   \xdb\n\n");
+                break;
+            }
+            PrintBoard(casenum);
+            for(int j = 0; j < wordlength; j++)
+            {
+                printf(" %c ", undsArray[j]);
+            }
+
+        }
+                        printf("\t\t\n\xdb\xdb Has you mood improved or do you want to continue playing? \xdb\xdb\n");
+                getch();
+                intro_2();
+                getch();
+                wait();
+}
+
+
+int readWord(char *buf, int bufSize)
+{
+    if(fgets(buf, bufSize, stdin) == NULL)
+    {
+        return 0;
+    }
+
+    return 1;
+}
+
+
+//NAMES AND BORDERS
+COORD c = {0, 0};
+void setxy (int x, int y)
+{
+ c.X = x; c.Y = y; // Set X and Y coordinates
+ SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+}
+
+void title_border()
+{
+        int i,j;
+ //Top border line...
+ setxy(5,1);
+ for(j=0; j<105; j++)
+  printf("%c", 223);
+
+ //Bottom border line...
+ setxy(5,26);
+ for(j=0; j<=105; j++)
+  printf("%c", 223);
+
+ //Left and Right border line...
+ for(j=0; j<25; j++)
+ {
+  setxy(110,1+j);
+  printf("%c",219);
+
+  setxy(5,1+j);
+  printf("%c",219);
+ }
+ printf("\n");
+ return 0;
+}
+
+void name_border()
+{
+     int i,j;
+ //Top border line...
+ setxy(5,5);
+ for(j=0; j<105; j++)
+  printf("%c", 223);
+
+ //Bottom border line...
+ setxy(5,16);
+ for(j=0; j<=105; j++)
+  printf("%c", 223);
+
+ //Left and Right border line...
+ for(j=0; j<11; j++)
+ {
+  setxy(110,5+j);
+  printf("%c",219);
+
+  setxy(5,5+j);
+  printf("%c",219);
+ }
+ printf("\n");
+ return 0;
+}
+
+void colors()
+{
+    while(i<2)
+    {
+        system("color 9");
+        wait();
+        system("color 1");
+        wait();
+        system("color 9");
+        wait();
+        system("color A");
+        wait();
+        system("color 2");
+        wait();
+        system("color A");
+        wait();
+        system("color B");
+        wait();
+        system("color 3");
+        wait();
+        system("color B");
+        wait();
+        system("color C");
+        wait();
+        system("color 4");
+        wait();
+        system("color C");
+        wait();
+        system("color D");
+        wait();
+        system("color 5");
+        wait();
+        system("color D");
+        wait();
+        system("color E");
+        wait();
+        system("color 6");
+        wait();
+        system("color E");
+        wait();
+        system("color F");
+        i++;
+        }
+}
+
+void gname()
+{
+    int i=1;
+    system("cls");
+    system("color F");
+    printf("\n\n\n");
+    printf("\t");printf("\t");printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);printf("%c", PR);wait();wait();printf("%c", PR); wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" "), wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);
+    printf("\t");printf("\t");printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");printf(" ");wait();printf(" ");wait();wait();printf(" "), wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR); wait();printf("%c", PR);wait();wait();printf(" "), wait();printf(" "), wait();printf(" "), wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" "), wait();printf(" "), wait();printf(" "), wait();printf(" "), wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" "), wait();printf(" "), wait();printf(" "), wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" \n");wait();
+    printf("\t");printf("\t");printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);printf("%c", PR);wait();wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);printf("%c", PR);printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("\n");wait();
+    printf("\t");printf("\t");printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf("\t");printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);printf("%c", PR);wait();wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf("\t");printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);printf("%c", PR);wait();printf("%c", PR);wait();wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);printf("%c", PR);wait();wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf("\t");printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);printf("%c", PR);wait();wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf("\t");printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf("\t");printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf("\t");printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n\n\n", PR);wait();
+
+    printf("\t");printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR); wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait(); printf("%c", PR);wait(); printf("%c", PR);wait(); printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c\n", PR);wait();
+    printf("\t");printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf(" ");wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();printf("%c", PR);wait();
+    title_border();
+    waitL();
+    getch();
+    printf("\n\n\t\t\t\t\t\tWAIT ");
+    while(i<2)
+    {
+        system("color 9");
+        waitL();
+        system("color 1");
+        waitL();
+        system("color 9");
+        waitL();
+        system("color A");
+        waitL();
+        system("color 2");
+        waitL();
+        system("color A");
+        waitL();
+        system("color B");
+        waitL();
+        system("color 3");
+        waitL();
+        system("color B");
+        waitL();
+        system("color C");
+        waitL();
+        system("color 4");
+        waitL();
+        system("color C");
+        waitL();
+        system("color D");
+        waitL();
+        system("color 5");
+        waitL();
+        system("color D");
+        waitL();
+        system("color E");
+        waitL();
+        system("color 6");
+        waitL();
+        system("color E");
+        waitL();
+        system("color F");
+        i++;
+    }
+    getch();
+    system("cls");
+}
+
+void hname()
+{
+
+printf("\n\n\n");
+system("color 6");
+printf("\t    ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c\n", PR);wait();
+printf("\t    ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("  ");printf("  ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c\n", PR);wait();
+printf("\t    ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("  ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c\n", PR);wait();
+printf("\t    ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("  ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c\n", PR);wait();
+printf("\t    ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c\n", PR);wait();
+printf("\t    ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c\n", PR);wait();
+printf("\t    ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c\n", PR);wait();
+printf("\t    ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c\n", PR);wait();
+printf("\t    ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c\n", PR);wait();
+name_border();
+colors();
+waitL();
+getch();
+}
+
+void sname()
+{
+system("color 9");
+printf("\n\n\n");
+printf("\t\t\t\t");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("\n");wait();
+name_border();
+getch();
+waitL();
+colors();
+}
+
+void tname()
+{
+system("color 4");
+printf("\n\n\n");
+printf("\t\t\t\t\t");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t\t");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t\t");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t\t");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t\t");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t\t");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t\t");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t\t\t\t\t");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("\n");
+printf("\t\t\t\t\t");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("\n");wait();
+name_border();
+getch();
+waitL();
+colors();
+}
+
+void t_tname()
+{
+printf("\n\n\n");
+system("color 2");
+printf("\t");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");;printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("\n");wait();
+printf("\t");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("\n");wait();
+printf("\t");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf("%c", PR);printf("\n");wait();
+printf("\t");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf(" ");printf(" ");printf(" ");printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("%c", PR);printf("\n");wait();
+name_border();
+getch();
+waitL();
+colors();
+}
+
+void intro_border()
+{
+     int i,j;
+ //Top border line...
+ setxy(15,3);
+ for(j=0; j<90; j++)
+  printf("%c", 223);
+
+ //Bottom border line...
+ setxy(15,20);
+ for(j=0; j<=90; j++)
+  printf("%c", 223);
+
+ //Left and Right border line...
+ for(j=0; j<22; j++)
+ {
+  setxy(100,1+j);
+  printf("%c",219);
+
+  setxy(20,1+j);
+  printf("%c",219);
+ }
+ printf("\n");
+ return 0;
+}
+
+void intro_colors()
+{
+    while(i<4)
+    {
+        system("color 9");
+        waitL();
+        system("color 1");
+        waitL();
+        system("color 9");
+        waitL();
+        system("color A");
+        waitL();
+        system("color 2");
+        waitL();
+        system("color A");
+        waitL();
+        system("color B");
+        waitL();
+        system("color 3");
+        waitL();
+        system("color B");
+        waitL();
+        system("color C");
+        waitL();
+        system("color 4");
+        waitL();
+        system("color C");
+        waitL();
+        system("color D");
+        waitL();
+        system("color 5");
+        waitL();
+        system("color D");
+        waitL();
+        system("color E");
+        waitL();
+        system("color 6");
+        waitL();
+        system("color E");
+        waitL();
+        system("color F");
+        i++;
+    }
+}
+
+void intro()
+{
+    int choice;
+        printf("\n\n\n\n\t\t\t\t               Welcome to mood gaming.\n");
+        printf("\n\t\t\t\tThis game allows you to choose between 4 games to play: \n\t\t\t\t\t\t--->Snake\n\t\t\t\t\t\t--->Tic Tac Toe\n\t\t\t\t\t\t--->Hangman\n\t\t\t\t\t\t--->2048.\n");
+        printf("\n\t\t\t\t  Depending on your mood you will be directed to play a game.\n");
+        printf("\n\t\t\t     The objective is to improve your mood at the end of the game. \n");
+        printf("\n\t\t\t\t\t Warning: You can only play one game at a time.    \n");
+        printf("\n\t\t\t\t              Choose wisely. Good luck!                         \n");
+        intro_border();
+        intro_colors();
+        getch();
+        system("cls");
+}
+
+void intro_2()
+{
+    int choice;
+    system("cls");
+    system("color 3");
+        printf("\n\n\n\n\n\t\t\t\xdb How are you feeling? \xdb\n");
+        printf("\n\t\t\t\t\t\t-> COMPETITIVE\n");
+        printf("\n\t\t\t\t\t\t-> BORED\n");
+        printf("\n\t\t\t\t\t\t-> STRESSED\n");
+        printf("\n\t\t\t\t\t\t-> ANGRY\n");
+        printf("\n\t\t\t\t\t\t-> Exit game\n");
+        printf("\n\t\t\t\t\t\tEnter numbers 1 to 5: ", choice);
+        intro_border();
+        intro_colors();
+        getch();
+}
+
+//MAIN
+int main()
+{
+    gname();
+    intro();
+    int choice;
+    intro_2();
+    do
+    {
+        scanf("%d", &choice);
+        switch(choice)
+        {
+        case 1:
+                {
+                system("cls");
+                system("color 2");
+                printf("\n\n\t\t\t\t\t\xdb  YOUR CHOICE IS.......!!  \xdb\n");
+                system("color 2");
+                t_tname();
+                wait();
+                tic_tac_toe();
+                break;
+                }
+
+
+        case 2:
+               {
+                system("cls");
+                system("color 9");
+                printf("\n\n\t\t\t\t\t\xdb  YOUR CHOICE IS.......!!  \xdb\n");
+                sname();
+                wait();
+                system("cls");
+                snake();
+                break;
+               }
+        case 3:
+                {
+                    system("cls");
+                    system("color 4");
+                    printf("\n\n\t\t\t\t\t\xdb  YOUR CHOICE IS.......!!  \xdb\n");
+                    tname();
+                    wait();
+                    system("cls");
+                    twenty_forty_eight();
+                    break;
+                }
+        case 4:
+                {
+                    system("cls");
+                    system("color 6");
+                    printf("\n\n\t\t\t\t\t\xdb  YOUR CHOICE IS.......!!  \xdb\n");
+                    hname();
+                    wait();
+                    system("cls");
+                    hangman();
+                    break;
+                }
+
+        case 5:
+                exit(0);
+                break;
+
+        default:
+                printf("\n\n\n\t\t\tINVALID INPUT!!! Try again...");
+
+        }
+    }
+    while(1);
+
+}
+
